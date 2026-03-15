@@ -1,0 +1,67 @@
+# Node modules
+node_modules/
+
+# Build output
+build/
+dist/
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# npm package lock
+package-lock.json
+pnpm-lock.yaml
+
+# yarn lock (uncomment if using yarn)
+# yarn.lock
+
+# Optional coverage directory
+coverage/
+
+# Mac-specific
+**/.DS_Store
+
+# Windows-specific
+**/Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+
+# React Native
+.expo/
+
+# Test results
+jest-cache/
+jest-*.cache
+
+# Storybook
+storybook-static/
+
+# build artifacts
+npm-debug.log*
+yarn-debug.log*
