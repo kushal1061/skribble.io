@@ -157,7 +157,7 @@ function Home({ socket, roomId }) {
                 <span className="text-xs font-bold text-amber-600 ml-2">{p.score}</span>
               </div>
             ))}
-            {phase === 'lobby' && isHost && (
+            {phase === 'lobby' && (
               <button
                 onClick={handleStartGame}
                 className="w-full rounded-2xl bg-stone-900 px-4 py-2 text-sm font-semibold text-white mt-2 hover:bg-stone-700 transition"
