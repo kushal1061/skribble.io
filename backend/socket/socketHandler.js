@@ -25,6 +25,7 @@ function socketHandler(io, GameManager, RoomManager) {
                 roomId,
                 players: room.players,
             });
+            io.to(roomId).emit("players-updated", { players: room.players });
         });
 
         socket.on("join-room", (data = {}) => {
@@ -48,8 +49,7 @@ function socketHandler(io, GameManager, RoomManager) {
             console.log(`${playerName} (${socket.id}) joined room ${roomId}`);
 
             socket.emit("room-joined", { roomId, players: room.players });
-            // Notify others
-            socket.to(roomId).emit("players-updated", { players: room.players });
+            io.to(roomId).emit("players-updated", { players: room.players });
         });
         socket.on("start-game", (data = {}) => {
             const roomId = data.roomId || (socketRoomMap.get(socket.id) || {}).roomId;
@@ -94,11 +94,7 @@ function socketHandler(io, GameManager, RoomManager) {
 
             GameManager.drawerPickedWord(roomId, word);
         });
-
-        // ─────────────────────────────────────────────────────────
         // Drawing
-        // ─────────────────────────────────────────────────────────
-
         socket.on("draw", (data = {}) => {
             const { roomId } = data;
             if (!roomId) {
@@ -138,11 +134,10 @@ function socketHandler(io, GameManager, RoomManager) {
             console.log(`Canvas cleared for room ${roomId}`);
             socket.to(roomId).emit("clear-canvas");
         });
-
-        // ─────────────────────────────────────────────────────────
+socket.on("undo-canvas", ({ roomId, imageData }) => {
+  socket.to(roomId).emit("undo-canvas", { imageData });
+});
         // Guessing & Chat
-        // ─────────────────────────────────────────────────────────
-
         socket.on("guess", (data = {}) => {
             const { roomId, guess } = data;
             if (!roomId || !guess) return;
@@ -165,11 +160,7 @@ function socketHandler(io, GameManager, RoomManager) {
                 isGuess: false,
             });
         });
-
-        // ─────────────────────────────────────────────────────────
         // Disconnect
-        // ─────────────────────────────────────────────────────────
-
         socket.on("disconnect", (reason) => {
             console.log(`User disconnected: ${socket.id} (${reason})`);
 

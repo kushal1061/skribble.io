@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 
 export default function socketHandler(socket, roomId) {
-   const [turn, setTurn] = useState('spectator'); 
+  const [turn, setTurn] = useState('spectator');
   const [timer, setTimer] = useState(60);
-  const [wordChoices, setWordChoices] = useState(null); 
-
-
-  const [currentWord, setCurrentWord] = useState('');   
-  const [maskedWord, setMaskedWord] = useState('');        
+  const [wordChoices, setWordChoices] = useState(null);
+  const [currentWord, setCurrentWord] = useState('');
+  const [maskedWord, setMaskedWord] = useState('');
   const [wordLength, setWordLength] = useState(0);
 
   const [drawerName, setDrawerName] = useState('');
@@ -47,7 +45,7 @@ export default function socketHandler(socket, roomId) {
 
     const onYourTurn = ({ word }) => {
       setCurrentWord(word);
-      setWordChoices(null); 
+      setWordChoices(null);
       setPhase('drawing');
     };
 
@@ -107,65 +105,71 @@ export default function socketHandler(socket, roomId) {
       if (players) setPlayers(players);
     };
 
-    socket.on('timer', onTimer);
-    socket.on('new-turn', onNewTurn);
-    socket.on('word-choices', onWordChoices);
-    socket.on('your-turn', onYourTurn);
-    socket.on('drawing-started', onDrawingStarted);
-    socket.on('hint', onHint);
-    socket.on('correct-guess', onCorrectGuess);
-    socket.on('player-guessed', onPlayerGuessed);
-    socket.on('players-updated', onPlayersUpdated);
-    socket.on('game-started', onGameStarted);
-    socket.on('turn-ended', onTurnEnded);
-    socket.on('game-over', onGameOver);
-    socket.on('room-joined', onRoomJoined);
-
-    return () => {
-      socket.off('timer', onTimer);
-      socket.off('new-turn', onNewTurn);
-      socket.off('word-choices', onWordChoices);
-      socket.off('your-turn', onYourTurn);
-      socket.off('drawing-started', onDrawingStarted);
-      socket.off('hint', onHint);
-      socket.off('correct-guess', onCorrectGuess);
-      socket.off('player-guessed', onPlayerGuessed);
-      socket.off('players-updated', onPlayersUpdated);
-      socket.off('game-started', onGameStarted);
-      socket.off('turn-ended', onTurnEnded);
-      socket.off('game-over', onGameOver);
-      socket.off('room-joined', onRoomJoined);
+    const onRoomCreated = ({ players }) => {
+      if (players) setPlayers(players);
     };
-  }, [socket]);
 
-  const handlePickWord = (word) => {
-    socket.emit('pick-word', { roomId, word });
-    setWordChoices(null);
-  };
+  socket.on('timer', onTimer);
+  socket.on('new-turn', onNewTurn);
+  socket.on('word-choices', onWordChoices);
+  socket.on('your-turn', onYourTurn);
+  socket.on('drawing-started', onDrawingStarted);
+  socket.on('hint', onHint);
+  socket.on('correct-guess', onCorrectGuess);
+  socket.on('player-guessed', onPlayerGuessed);
+  socket.on('players-updated', onPlayersUpdated);
+  socket.on('game-started', onGameStarted);
+  socket.on('turn-ended', onTurnEnded);
+  socket.on('game-over', onGameOver);
+  socket.on('room-joined', onRoomJoined);
+  socket.on('room-created', onRoomCreated);
 
-  const handleStartGame = () => {
-    socket.emit('start-game', { roomId });
+  return () => {
+    socket.off('timer', onTimer);
+    socket.off('new-turn', onNewTurn);
+    socket.off('word-choices', onWordChoices);
+    socket.off('your-turn', onYourTurn);
+    socket.off('drawing-started', onDrawingStarted);
+    socket.off('hint', onHint);
+    socket.off('correct-guess', onCorrectGuess);
+    socket.off('player-guessed', onPlayerGuessed);
+    socket.off('players-updated', onPlayersUpdated);
+    socket.off('game-started', onGameStarted);
+    socket.off('turn-ended', onTurnEnded);
+    socket.off('game-over', onGameOver);
+    socket.off('room-joined', onRoomJoined);
+    socket.off('room-created', onRoomCreated);
   };
+}, [socket]);
 
-  return {
-    turn,
-    timer,
-    wordChoices,
-    currentWord,
-    maskedWord,
-    wordLength,
-    drawerName,
-    round,
-    totalRounds,
-    players,
-    phase,
-    revealedWord,
-    leaderboard,
-    guessedToasts,
-    hintWord,
-    youGuessed,
-    handlePickWord,
-    handleStartGame,
-  };
+const handlePickWord = (word) => {
+  socket.emit('pick-word', { roomId, word });
+  setWordChoices(null);
+};
+
+const handleStartGame = () => {
+  socket.emit('start-game', { roomId });
+};
+
+return {
+  turn,
+  timer,
+  wordChoices,
+  currentWord,
+  maskedWord,
+  wordLength,
+  drawerName,
+  round,
+  totalRounds,
+  players,
+  phase,
+  revealedWord,
+  leaderboard,
+  guessedToasts,
+  hintWord,
+  youGuessed,
+  handlePickWord,
+  handleStartGame,
+};
 
 }
