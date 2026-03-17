@@ -22,10 +22,6 @@ const WORDS = [
     "balloon", "magician", "dragon", "unicorn", "zombie", "ghost", "mermaid",
     "knight", "cowboy", "alien", "vampire", "scarecrow", "snowman",
 ];
-
-/**
- * Returns `count` unique random words from the word list.
- */
 function getRandomWords(count = 3) {
     const shuffled = [...WORDS].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, count);

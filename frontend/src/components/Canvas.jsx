@@ -52,6 +52,9 @@ export default function DrawingCanvas({ turn, socket, roomId }) {
         img.src = imageData;
       }
     };
+    socket.on("turn-ended",()=>{
+      historyStack.current = [];
+    })
     socket.on("draw", drawListener);
     socket.on("clear-canvas", clearListener);
     socket.on('undo-canvas', onUndoCanvas);

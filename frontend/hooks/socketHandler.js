@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-
 export default function socketHandler(socket, roomId) {
   const [turn, setTurn] = useState('spectator');
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(0);
   const [wordChoices, setWordChoices] = useState(null);
   const [currentWord, setCurrentWord] = useState('');
   const [maskedWord, setMaskedWord] = useState('');
@@ -22,6 +21,7 @@ export default function socketHandler(socket, roomId) {
   const [guessedToasts, setGuessedToasts] = useState([]);
   const [hintWord, setHintWord] = useState('');
   const [youGuessed, setYouGuessed] = useState(false);
+  const [isHost, setIsHost] = useState(false);
 
   useEffect(() => {
     const onTimer = (time) => setTimer(time);
@@ -107,6 +107,11 @@ export default function socketHandler(socket, roomId) {
 
     const onRoomCreated = ({ players }) => {
       if (players) setPlayers(players);
+      setIsHost(true);
+    };
+
+    const onHostChanged = ({ newHostId }) => {
+      setIsHost(newHostId === socket.id);
     };
 
   socket.on('timer', onTimer);
@@ -123,6 +128,7 @@ export default function socketHandler(socket, roomId) {
   socket.on('game-over', onGameOver);
   socket.on('room-joined', onRoomJoined);
   socket.on('room-created', onRoomCreated);
+  socket.on('host-changed', onHostChanged);
 
   return () => {
     socket.off('timer', onTimer);
@@ -139,6 +145,7 @@ export default function socketHandler(socket, roomId) {
     socket.off('game-over', onGameOver);
     socket.off('room-joined', onRoomJoined);
     socket.off('room-created', onRoomCreated);
+    socket.off('host-changed', onHostChanged);
   };
 }, [socket]);
 
@@ -168,6 +175,7 @@ return {
   guessedToasts,
   hintWord,
   youGuessed,
+  isHost,
   handlePickWord,
   handleStartGame,
 };

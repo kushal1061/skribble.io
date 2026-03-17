@@ -40,11 +40,26 @@ function App() {
     };
   }, []);
 
-  const handleCreateRoom = () => {
+  // ── Settings modal state ──────────────────────────────────────
+  const [showSettings, setShowSettings] = useState(false);
+  const [settings, setSettings] = useState({
+    noOfRounds: 3,
+    duration: 80,
+    maxPlayers: 8,
+    hints: true,
+    noOfHints: 3,
+  });
+
+  const openSettings = () => {
     setError("");
+    setShowSettings(true);
+  };
+
+  const handleCreateRoom = () => {
+    setShowSettings(false);
     socket.emit("create-room", {
       name: nameRef.current?.value?.trim() || "Player",
-      settings: {},
+      settings,
     });
   };
 
@@ -92,13 +107,14 @@ function App() {
                   ref={nameRef}
                   id="name"
                   type="text"
+                  required
                   placeholder="Sketch master"
                   className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm outline-none transition focus:border-amber-500 focus:bg-white"
                 />
               </div>
 
               <button
-                onClick={handleCreateRoom}
+                onClick={openSettings}
                 className="w-full rounded-2xl bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-800"
               >
                 Create a new room
@@ -139,6 +155,86 @@ function App() {
           </div>
         </section>
       </div>
+
+      {/* ── Settings modal ─────────────────────────────────────── */}
+      {showSettings && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-7 shadow-2xl">
+            <h3 className="mb-1 text-lg font-bold text-stone-900">Room settings</h3>
+            <p className="mb-5 text-sm text-stone-400">Tweak before you create</p>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-stone-700">Rounds</label>
+                <input
+                  type="number"
+                  min={1} max={10}
+                  value={settings.noOfRounds}
+                  onChange={e => setSettings(s => ({ ...s, noOfRounds: Number(e.target.value) }))}
+                  className="w-20 rounded-xl border border-stone-200 bg-stone-50 px-3 py-1.5 text-center text-sm outline-none focus:border-amber-400"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-stone-700">Draw time</label>
+                <select
+                  value={settings.duration}
+                  onChange={e => setSettings(s => ({ ...s, duration: Number(e.target.value) }))}
+                  className="w-28 rounded-xl border border-stone-200 bg-stone-50 px-3 py-1.5 text-sm outline-none focus:border-amber-400"
+                >
+                  {[30, 60, 80, 90, 120].map(t => (
+                    <option key={t} value={t}>{t}s</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-stone-700">Max players</label>
+                <input
+                  type="number"
+                  min={2} max={8}
+                  value={settings.maxPlayers}
+                  onChange={e => setSettings(s => ({ ...s, maxPlayers: Number(e.target.value) }))}
+                  className="w-20 rounded-xl border border-stone-200 bg-stone-50 px-3 py-1.5 text-center text-sm outline-none focus:border-amber-400"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-stone-700">Hints</label>
+                <button
+                  onClick={() => setSettings(s => ({ ...s, hints: !s.hints }))}
+                  className={`relative h-6 w-11 rounded-full transition-colors ${settings.hints ? 'bg-amber-500' : 'bg-stone-200'}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${settings.hints ? 'translate-x-5' : ''}`} />
+                </button>
+              </div>
+              {settings.hints && (
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-stone-700">No. of hints</label>
+                  <input
+                    type="number"
+                    min={1} max={5}
+                    value={settings.noOfHints}
+                    onChange={e => setSettings(s => ({ ...s, noOfHints: Number(e.target.value) }))}
+                    className="w-20 rounded-xl border border-stone-200 bg-stone-50 px-3 py-1.5 text-center text-sm outline-none focus:border-amber-400"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setShowSettings(false)}
+                className="flex-1 rounded-2xl border border-stone-200 py-2.5 text-sm font-medium text-stone-600 hover:bg-stone-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateRoom}
+                className="flex-1 rounded-2xl bg-stone-950 py-2.5 text-sm font-semibold text-white hover:bg-stone-800 transition"
+              >
+                Create Room
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
