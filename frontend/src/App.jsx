@@ -29,6 +29,7 @@ function App() {
     });
     socket.on("room-error", ({ message }) => {
       setError(message);
+      alert(message);
     });
 
     return () => {
