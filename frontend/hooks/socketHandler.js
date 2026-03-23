@@ -175,7 +175,7 @@ return {
   guessedToasts,
   hintWord,
   youGuessed,
-  isHost,
+  // isHost,
   handlePickWord,
   handleStartGame,
 };

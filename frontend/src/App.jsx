@@ -8,6 +8,7 @@ function App() {
   const [error, setError] = useState("");
   const nameRef = useRef(null);
   const roomRef = useRef(null);
+  const [isHost, setIsHost] = useState(false);
   useEffect(() => {
     socket.connect();
     socket.on("connect", () => {
@@ -19,6 +20,7 @@ function App() {
     });
     socket.on("room-created", ({ roomId }) => {
       setRoomId(roomId);
+      setIsHost(true);
       setInRoom(true);
       setError("");
     });
@@ -80,7 +82,7 @@ function App() {
   };
 
   if (inRoom) {
-    return <Home socket={socket} roomId={roomId} />;
+    return <Home socket={socket} roomId={roomId} isHost={isHost} />;
   }
 
   return (

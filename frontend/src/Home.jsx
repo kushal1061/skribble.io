@@ -3,7 +3,7 @@ import Canvas from './components/Canvas';
 import Chat from './components/Chat';
 import GameOver from './components/GameOver';
 import socketHandler from '../hooks/socketHandler';
-function Home({ socket, roomId }) {
+function Home({ socket, roomId,isHost }) {
 
   const {
     turn,
@@ -123,7 +123,7 @@ function Home({ socket, roomId }) {
           {/* Word & phase info */}
           <div className="flex flex-col items-center">
             {phase === 'lobby' && (
-              <span className="text-sm text-stone-400 text-center">Waiting to start…</span>
+              <span className="text-sm text-stone-400 text-center">Waiting for the host to start…</span>
             )}
             {phase === 'choosing' && (
               <span className="text-sm text-amber-600 font-semibold">
@@ -157,7 +157,7 @@ function Home({ socket, roomId }) {
                 <span className="text-xs font-bold text-amber-600 ml-2">{p.score}</span>
               </div>
             ))}
-            {phase === 'lobby' && (
+            {phase === 'lobby' && isHost && (
               <button
                 onClick={handleStartGame}
                 className="w-full rounded-2xl bg-stone-900 px-4 py-2 text-sm font-semibold text-white mt-2 hover:bg-stone-700 transition"
