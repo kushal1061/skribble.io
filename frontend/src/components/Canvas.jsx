@@ -69,14 +69,20 @@ export default function DrawingCanvas({ turn, socket, roomId }) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
+
+    // Support both mouse and touch events
+    const clientX = e.touches ? e.touches[0].clientX : e.nativeEvent.offsetX + rect.left;
+    const clientY = e.touches ? e.touches[0].clientY : e.nativeEvent.offsetY + rect.top;
+
     return {
-      x: e.nativeEvent.offsetX * scaleX,
-      y: e.nativeEvent.offsetY * scaleY,
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY,
     };
   };
 
   const startDrawing = (e) => {
     if (turn !== "your_turn") return;
+    if (e.touches) e.preventDefault();
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const { x, y } = getPos(e);
@@ -89,6 +95,7 @@ export default function DrawingCanvas({ turn, socket, roomId }) {
 
   const draw = (e) => {
     if (!drawing || turn !== "your_turn") return;
+    if (e.touches) e.preventDefault();
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const { x, y } = getPos(e);
@@ -177,10 +184,15 @@ export default function DrawingCanvas({ turn, socket, roomId }) {
         width={800}
         height={500}
         className="h-3/4 w-full rounded-2xl border border-slate-200 bg-white shadow"
+        style={{ touchAction: "none" }}
         onMouseDown={startDrawing}
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
+        onTouchStart={startDrawing}
+        onTouchMove={draw}
+        onTouchEnd={stopDrawing}
+        onTouchCancel={stopDrawing}
       />
 
       <button
