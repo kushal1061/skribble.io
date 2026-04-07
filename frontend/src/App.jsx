@@ -6,7 +6,8 @@ function App() {
   const [inRoom, setInRoom] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [error, setError] = useState("");
-  const nameRef = useRef(null);
+  const createNameRef = useRef(null);
+  const joinNameRef = useRef(null);
   const roomRef = useRef(null);
   const [isHost, setIsHost] = useState(false);
   useEffect(() => {
@@ -61,7 +62,7 @@ function App() {
   const handleCreateRoom = () => {
     setShowSettings(false);
     socket.emit("create-room", {
-      name: nameRef.current?.value?.trim() || "Player",
+      name: createNameRef.current?.value?.trim() || "Player",
       settings,
     });
   };
@@ -74,10 +75,15 @@ function App() {
       return;
     }
 
+    let name = joinNameRef.current?.value?.trim();
+    if (!name) {
+      name = "Player";
+    }
+
     setError("");
     socket.emit("join-room", {
       roomId: enteredRoomId,
-      name: nameRef.current?.value?.trim() || "Player",
+      name: name,
     });
   };
 
@@ -86,153 +92,148 @@ function App() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fde68a_0%,_#fff7ed_35%,_#f5f5f4_100%)] px-6 py-10 text-stone-900">
-      <h1 className='text-center text-6xl'> Skrrible io </h1>
-      <div className="mx-auto flex justify-center min-h-[calc(100vh-10rem)] w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-        <section className="relative">
-          <div className="absolute -left-6 -top-6 h-28 w-28 rounded-full bg-amber-300/40 blur-3xl" />
-          <div className="absolute -bottom-10 right-0 h-32 w-32 rounded-full bg-orange-300/30 blur-3xl" />
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#60a5fa_0%,_#38bdf8_35%,_#0284c7_100%)] flex flex-col justify-center items-center px-6 py-10 font-fredoka">
+      
+      <div className="absolute top-10 flex w-full justify-center">
+         <h1 className="text-center text-7xl font-black text-white drop-shadow-[0_4px_0_rgba(2,132,199,1)] tracking-widest skew-y-[-2deg] mb-10">
+           Skrrible.io
+         </h1>
+      </div>
 
-          <div className="relative rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-[0_24px_60px_rgba(120,53,15,0.12)] backdrop-blur sm:p-8">
-            <div className="mb-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-700">
-                Join The Lobby
-              </p>
-              <h2 className="mt-2 text-2xl font-bold text-stone-950">Start a room or enter an invite code</h2>
+      <div className="mx-auto flex flex-col lg:flex-row justify-center w-full max-w-4xl items-center gap-10 mt-20">
+        
+        {/* Left Column: Create Room */}
+        <section className="w-full max-w-sm">
+          <div className="skribbl-box bg-white p-8 rounded-[2rem] flex flex-col gap-6 text-center animate-bounce-in">
+            <div>
+              <h2 className="text-3xl font-black text-sky-600 mb-2">Create Room</h2>
+              <p className="text-lg font-bold text-stone-500">Host your own game!</p>
             </div>
 
-            <div className="space-y-5">
-              <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-medium text-stone-700">
-                  Your name
-                </label>
-                <input
-                  ref={nameRef}
-                  id="name"
-                  type="text"
-                  required
-                  placeholder="Sketch master"
-                  className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm outline-none transition focus:border-amber-500 focus:bg-white"
-                />
-              </div>
-
+            <div className="flex flex-col gap-4">
+              <input
+                ref={createNameRef}
+                id="create-name"
+                type="text"
+                placeholder="Enter your name"
+                className="w-full rounded-2xl px-5 py-4 text-xl font-bold outline-none transition skribbl-box focus:border-sky-500 bg-stone-100 text-stone-800 placeholder-stone-400"
+              />
               <button
                 onClick={openSettings}
-                className="w-full rounded-2xl bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-800"
+                className="w-full rounded-2xl bg-green-500 px-4 py-4 text-xl font-black text-white skribbl-btn hover:bg-green-600"
               >
-                Create a new room
+                CREATE GAME
               </button>
+            </div>
+          </div>
+        </section>
 
-              <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-stone-200" />
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-400">or</span>
-                <div className="h-px flex-1 bg-stone-200" />
-              </div>
+        {/* Divider for Desktop / Mobile */}
+        <div className="hidden lg:flex flex-col items-center gap-2">
+            <div className="w-2 h-16 bg-white/50 rounded-full" />
+            <span className="text-2xl font-black text-white">OR</span>
+            <div className="w-2 h-16 bg-white/50 rounded-full" />
+        </div>
 
-              <div className="space-y-2">
-                <label htmlFor="room-id" className="text-sm font-medium text-stone-700">
-                  Room ID
-                </label>
-                <input
-                  ref={roomRef}
-                  id="room-id"
-                  type="text"
-                  placeholder="Enter room code"
-                  className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm outline-none transition focus:border-amber-500 focus:bg-white"
-                />
-              </div>
+        {/* Right Column: Join Room */}
+        <section className="w-full max-w-sm">
+          <div className="skribbl-box bg-white p-8 rounded-[2rem] flex flex-col gap-6 text-center animate-bounce-in" style={{ animationDelay: '0.1s' }}>
+            <div>
+              <h2 className="text-3xl font-black text-orange-500 mb-2">Join Room</h2>
+              <p className="text-lg font-bold text-stone-500">Play with friends!</p>
+            </div>
 
+            <div className="flex flex-col gap-4">
+              <input
+                ref={joinNameRef}
+                id="join-name"
+                type="text"
+                placeholder="Enter your name"
+                className="w-full rounded-2xl px-5 py-4 text-xl font-bold outline-none transition skribbl-box focus:border-orange-500 bg-stone-100 text-stone-800 placeholder-stone-400"
+              />
+              <input
+                ref={roomRef}
+                id="room-id"
+                type="text"
+                placeholder="Paste Room ID here"
+                className="w-full rounded-2xl px-5 py-4 text-xl font-bold outline-none transition skribbl-box focus:border-orange-500 bg-stone-100 text-stone-800 placeholder-stone-400"
+              />
               <button
                 onClick={handleJoinRoom}
-                className="w-full rounded-2xl bg-amber-500 px-4 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-400"
+                className="w-full rounded-2xl bg-orange-400 px-4 py-4 text-xl font-black text-white skribbl-btn hover:bg-orange-500"
               >
-                Join existing room
+                JOIN GAME
               </button>
-
-              {error && (
-                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                  {error}
-                </div>
-              )}
             </div>
+            
+            {error && (
+              <div className="rounded-2xl border border-red-200 bg-red-100 px-4 py-3 text-lg font-bold text-red-600 animate-wiggle">
+                {error}
+              </div>
+            )}
           </div>
         </section>
       </div>
 
       {/* ── Settings modal ─────────────────────────────────────── */}
       {showSettings && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-3xl bg-white p-7 shadow-2xl">
-            <h3 className="mb-1 text-lg font-bold text-stone-900">Room settings</h3>
-            <p className="mb-5 text-sm text-stone-400">Tweak before you create</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-sky-900/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm rounded-[2.5rem] bg-white p-8 skribbl-box animate-bounce-in flex flex-col gap-6">
+            <div className="text-center">
+              <h3 className="text-3xl font-black text-sky-600">Room Settings</h3>
+            </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-stone-700">Rounds</label>
-                <input
-                  type="number"
-                  min={1} max={10}
-                  value={settings.noOfRounds}
-                  onChange={e => setSettings(s => ({ ...s, noOfRounds: Number(e.target.value) }))}
-                  className="w-20 rounded-xl border border-stone-200 bg-stone-50 px-3 py-1.5 text-center text-sm outline-none focus:border-amber-400"
-                />
+            <div className="flex flex-col gap-5 font-bold text-lg text-stone-700">
+              <div className="flex items-center justify-between bg-stone-100 p-4 rounded-2xl skribbl-box">
+                <label>Rounds</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="number"
+                    min={1} max={10}
+                    value={settings.noOfRounds}
+                    onChange={e => setSettings(s => ({ ...s, noOfRounds: Number(e.target.value) }))}
+                    className="w-16 rounded-xl bg-white px-2 py-2 text-center font-black outline-none skribbl-box focus:border-sky-500"
+                  />
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-stone-700">Draw time</label>
+              
+              <div className="flex items-center justify-between bg-stone-100 p-4 rounded-2xl skribbl-box">
+                <label>Draw Time (s)</label>
                 <select
                   value={settings.duration}
                   onChange={e => setSettings(s => ({ ...s, duration: Number(e.target.value) }))}
-                  className="w-28 rounded-xl border border-stone-200 bg-stone-50 px-3 py-1.5 text-sm outline-none focus:border-amber-400"
+                  className="w-24 rounded-xl bg-white px-2 py-2 font-black outline-none skribbl-box focus:border-sky-500 cursor-pointer"
                 >
                   {[30, 60, 80, 90, 120].map(t => (
-                    <option key={t} value={t}>{t}s</option>
+                    <option key={t} value={t}>{t}</option>
                   ))}
                 </select>
               </div>
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-stone-700">Max players</label>
+              
+              <div className="flex items-center justify-between bg-stone-100 p-4 rounded-2xl skribbl-box">
+                <label>Max Players</label>
                 <input
                   type="number"
                   min={2} max={8}
                   value={settings.maxPlayers}
                   onChange={e => setSettings(s => ({ ...s, maxPlayers: Number(e.target.value) }))}
-                  className="w-20 rounded-xl border border-stone-200 bg-stone-50 px-3 py-1.5 text-center text-sm outline-none focus:border-amber-400"
+                  className="w-16 rounded-xl bg-white px-2 py-2 text-center font-black outline-none skribbl-box focus:border-sky-500"
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-stone-700">Hints</label>
-                <button
-                  onClick={() => setSettings(s => ({ ...s, hints: !s.hints }))}
-                  className={`relative h-6 w-11 rounded-full transition-colors ${settings.hints ? 'bg-amber-500' : 'bg-stone-200'}`}
-                >
-                  <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${settings.hints ? 'translate-x-5' : ''}`} />
-                </button>
-              </div>
-              {settings.hints && (
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-stone-700">No. of hints</label>
-                  <input
-                    type="number"
-                    min={1} max={5}
-                    value={settings.noOfHints}
-                    onChange={e => setSettings(s => ({ ...s, noOfHints: Number(e.target.value) }))}
-                    className="w-20 rounded-xl border border-stone-200 bg-stone-50 px-3 py-1.5 text-center text-sm outline-none focus:border-amber-400"
-                  />
-                </div>
-              )}
             </div>
-            <div className="mt-6 flex gap-3">
+
+            <div className="flex gap-4 mt-2">
               <button
                 onClick={() => setShowSettings(false)}
-                className="flex-1 rounded-2xl border border-stone-200 py-2.5 text-sm font-medium text-stone-600 hover:bg-stone-50 transition"
+                className="flex-1 rounded-2xl bg-stone-400 px-4 py-4 text-xl font-black text-white skribbl-btn hover:bg-stone-500"
               >
-                Cancel
+                BACK
               </button>
               <button
                 onClick={handleCreateRoom}
-                className="flex-1 rounded-2xl bg-stone-950 py-2.5 text-sm font-semibold text-white hover:bg-stone-800 transition"
+                className="flex-1 rounded-2xl bg-green-500 px-4 py-4 text-xl font-black text-white skribbl-btn hover:bg-green-600"
               >
-                Create Room
+                START Let's Go!
               </button>
             </div>
           </div>

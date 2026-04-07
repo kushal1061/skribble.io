@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-function Chat({ socket, roomId, youGuessed = false, isDrawer = false }) {
+export default function Chat({ socket, roomId, youGuessed = false, isDrawer = false }) {
   const [messages, setMessages] = useState([]);
   const inputRef = useRef(null);
   const endRef = useRef(null);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    // Timeout ensures DOM has updated with the new message before scrolling
+    setTimeout(() => {
+      endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 10);
   }, [messages]);
 
   useEffect(() => {
@@ -92,18 +95,18 @@ function Chat({ socket, roomId, youGuessed = false, isDrawer = false }) {
     : 'Type a guess…';
 
   return (
-    <div className="flex h-[30rem] w-[20rem] shrink-0 flex-col rounded-2xl border border-amber-200 bg-amber-50 p-3 shadow-sm">
+    <div className="flex h-full w-full flex-col rounded-3xl bg-[#f0f0f0] p-4 skribbl-box gap-3">
       {/* Messages */}
-      <div className="flex-1 space-y-2 overflow-y-auto pr-2 [scrollbar-color:#d97706_#fef3c7] [scrollbar-width:thin]">
+      <div className="flex-1 space-y-2 overflow-y-auto pr-2 bg-white rounded-2xl skribbl-box p-3">
         {messages.map((msg) => {
           if (msg.isSystem) {
             return (
               <div
                 key={msg.id}
-                className={`rounded-xl px-3 py-2 text-xs font-semibold text-center ${
+                className={`rounded-xl px-3 py-2 text-sm font-black text-center ${
                   msg.isSelf
-                    ? 'bg-green-100 text-green-700 border border-green-200'
-                    : 'bg-amber-100 text-amber-800'
+                    ? 'bg-green-400 text-white'
+                    : 'bg-yellow-300 text-yellow-900 border-2 border-yellow-400'
                 }`}
               >
                 {msg.text}
@@ -113,14 +116,14 @@ function Chat({ socket, roomId, youGuessed = false, isDrawer = false }) {
           return (
             <div
               key={msg.id}
-              className={`rounded-2xl px-3 py-2 text-sm shadow-sm ${
+              className={`rounded-xl px-3 py-2 text-base font-bold ${
                 msg.isGuess
-                  ? 'bg-white border border-amber-200 text-amber-950'
-                  : 'bg-white text-slate-800'
+                  ? 'bg-amber-100 text-amber-950 border-2 border-amber-300'
+                  : 'bg-sky-50 text-stone-800'
               }`}
             >
               {msg.senderName && (
-                <span className="font-semibold text-amber-700 mr-1">{msg.senderName}:</span>
+                <span className="font-black text-sky-700 mr-2">{msg.senderName}:</span>
               )}
               {msg.text}
             </div>
@@ -130,7 +133,7 @@ function Chat({ socket, roomId, youGuessed = false, isDrawer = false }) {
       </div>
 
       {/* Input */}
-      <div className="mt-3 flex w-full items-center gap-2 border-t border-amber-200 pt-3">
+      <div className="flex w-full items-center gap-2">
         <input
           ref={inputRef}
           id="message-input"
@@ -138,18 +141,16 @@ function Chat({ socket, roomId, youGuessed = false, isDrawer = false }) {
           disabled={inputDisabled}
           placeholder={placeholder}
           onKeyDown={handleKey}
-          className="flex-1 rounded-xl border border-amber-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-amber-500 disabled:cursor-not-allowed disabled:bg-amber-50 disabled:text-amber-400"
+          className="flex-1 rounded-2xl px-4 py-3 text-base font-bold outline-none transition disabled:cursor-not-allowed disabled:bg-stone-200 disabled:text-stone-400 skribbl-box focus:border-blue-500 bg-white"
         />
         <button
           onClick={send}
           disabled={inputDisabled}
-          className="rounded-xl bg-amber-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="h-full rounded-2xl bg-blue-500 px-6 py-2 text-lg font-black text-white skribbl-btn disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600"
         >
-          Send
+          SEND
         </button>
       </div>
     </div>
   );
 }
-
-export default Chat;

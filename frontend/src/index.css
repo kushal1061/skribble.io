@@ -1,4 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-fredoka: "Fredoka", sans-serif;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-fredoka);
+    background-color: #bae6fd;
+    background-image: radial-gradient(#93c5fd 2px, transparent 2px);
+    background-size: 32px 32px;
+  }
+}
 
 @keyframes slide-in {
   from { opacity: 0; transform: translateX(30px); }
@@ -9,11 +31,32 @@
   to   { opacity: 1; transform: scale(1); }
 }
 @keyframes bounce-in {
-  0%   { opacity: 0; transform: translateX(-50%) translateY(-12px); }
-  60%  { transform: translateX(-50%) translateY(4px); }
-  100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  0%   { opacity: 0; transform: translateY(-12px) scale(0.96); }
+  60%  { opacity: 1; transform: translateY(4px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes bounce-in-centered {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(-12px) scale(0.96); }
+  60%  { opacity: 1; transform: translateX(-50%) translateY(4px) scale(1.01); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
 .animate-slide-in  { animation: slide-in  0.3s ease forwards; }
 .animate-fade-in   { animation: fade-in   0.25s ease forwards; }
 .animate-bounce-in { animation: bounce-in 0.4s ease forwards; }
+.animate-bounce-in-centered { animation: bounce-in-centered 0.4s ease forwards; }
+
+.skribbl-box {
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+}
+.skribbl-btn {
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+  transition: all 0.1s ease;
+}
+.skribbl-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
+}
